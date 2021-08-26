@@ -13,7 +13,7 @@ const filename = (ext) => isDev ? `[name].${ext}` : `app.bundle.[contenthash].${
 
 module.exports = {
     context: path.resolve(__dirname, 'src'),
-    mode: 'development',
+    mode: 'production',
     entry: './js/app.js',
     devtool: isProd ? false : 'source-map',
     output: {
@@ -23,13 +23,40 @@ module.exports = {
         assetModuleFilename: 'assets/[path][name].[contenthash][ext]'
     },
     devServer: {
-        historyApiFallback: true,
-        contentBase: path.resolve(__dirname, 'app'),
+        historyApiFallback: false,
         compress: true,
         port: process.env.PORT || 3333,
         host: process.env.HOST || '127.0.0.1',
         open: true,
-        hot: true
+        hot: true,
+        static: {
+            directory: path.join(__dirname, 'public'),
+            watch: true,
+        },
+        watchFiles: {
+            paths: ['src/*.html', 'public/*'],
+            options: {
+                usePolling: false,
+            },
+        },
+        liveReload: true,
+        devMiddleware: {
+            index: true,
+            mimeTypes: { "text/html": ["phtml"] },
+            serverSideRender: true,
+            writeToDisk: true,
+        },
+        client: {
+            progress: true,
+            overlay: {
+                errors: true,
+                warnings: false
+            }
+        },
+        headers: {
+            'X-Powered-By': process.env.POWERED,
+            'Developed-By': process.env.POWERED
+        }
     },
     plugins: [
         new HTMLWebpackPlugin({
@@ -104,6 +131,7 @@ module.exports = {
         ]
     },
     optimization: {
+        minimize: true,
         minimizer: [
             new CssMinimizerPlugin({
                 minimizerOptions: {
