@@ -23,35 +23,52 @@ module.exports = {
         assetModuleFilename: 'assets/[path][name].[contenthash][ext]'
     },
     devServer: {
-        historyApiFallback: false,
+        historyApiFallback: true,
         compress: true,
         port: process.env.PORT || 3333,
         host: process.env.HOST || '127.0.0.1',
         open: true,
-        hot: true,
-        static: {
-            directory: path.join(__dirname, 'public'),
-            watch: true,
-        },
-        watchFiles: {
-            paths: ['src/*.html', 'public/*'],
-            options: {
-                usePolling: false,
+        hot: false,
+        client: {
+            overlay: {
+                errors: true,
+                warnings: true,
             },
+            progress: true
         },
+        static: [
+            {
+                directory: path.join(__dirname, 'app'),
+            },
+            {
+                directory: path.join(__dirname, 'src/scss'),
+            },
+            {
+                directory: path.join(__dirname, 'src/img'),
+            },
+            {
+                directory: path.join(__dirname, 'src/js'),
+            },
+            {
+                publicPath: './'
+            },
+            {
+                serveIndex: true
+            }
+        ],
         liveReload: true,
         devMiddleware: {
             index: true,
-            mimeTypes: { "text/html": ["phtml"] },
+            mimeTypes: { "text/html": ["html"] },
+            publicPath: path.join(__dirname, 'app'),
             serverSideRender: true,
             writeToDisk: true,
         },
-        client: {
-            progress: true,
-            overlay: {
-                errors: true,
-                warnings: false
-            }
+        watchFiles: {
+            paths: ['src/*.html', 'src/img/*.jpg'],
+            options: {
+                usePolling: true,
+            },
         },
         headers: {
             'X-Powered-By': process.env.POWERED,
